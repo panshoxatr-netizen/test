@@ -1,6 +1,6 @@
 'use client'
 
-// Componente para renderizar un diagrama de flujo clasico estilo Nassi-Shneiderman / tabular
+// Componente para renderizar un diagrama Nassi-Shneiderman
 
 export function FlowchartView({ blocks }) {
   // Recolectar todas las variables de entrada
@@ -32,368 +32,266 @@ export function FlowchartView({ blocks }) {
 
   return (
     <div className="min-h-[400px] p-6 border-2 border-border rounded-lg bg-white overflow-auto">
-      <div className="inline-block min-w-[300px]">
-        {/* Contenedor principal con borde */}
-        <table className="border-collapse border-2 border-black w-full" style={{ fontFamily: 'monospace' }}>
-          <tbody>
-            {/* Inicio */}
-            <tr>
-              <td className="border-2 border-black px-4 py-2 text-center bg-gray-50">
-                Inicio
-              </td>
-            </tr>
-            
-            {/* Declaracion de variables si hay entradas */}
-            {inputVariables.length > 0 && (
-              <tr>
-                <td className="border-2 border-black px-4 py-2 text-center">
-                  Entero: {inputVariables.join(', ')}
-                </td>
-              </tr>
-            )}
-            
-            {/* Bloques del diagrama */}
-            <FlowchartRows blocks={blocks} />
-            
-            {/* Fin */}
-            <tr>
-              <td className="border-2 border-black px-4 py-2 text-center bg-gray-50">
-                Fin algoritmo
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="inline-block min-w-[280px]" style={{ fontFamily: 'Arial, sans-serif', fontSize: '13px' }}>
+        {/* Contenedor principal */}
+        <div className="border-2 border-black">
+          {/* Inicio */}
+          <div className="border-b-2 border-black px-4 py-2 text-center bg-gray-100">
+            Inicio
+          </div>
+          
+          {/* Declaracion de variables si hay entradas */}
+          {inputVariables.length > 0 && (
+            <div className="border-b-2 border-black px-4 py-2 text-center">
+              Entero: {inputVariables.join(', ')}
+            </div>
+          )}
+          
+          {/* Bloques del diagrama */}
+          <FlowchartBlocks blocks={blocks} />
+          
+          {/* Fin */}
+          <div className="px-4 py-2 text-center bg-gray-100">
+            Fin algoritmo
+          </div>
+        </div>
       </div>
     </div>
   )
 }
 
-function FlowchartRows({ blocks }) {
+function FlowchartBlocks({ blocks }) {
   return (
     <>
       {blocks.map((block) => (
-        <FlowchartRow key={block.id} block={block} />
+        <FlowchartBlock key={block.id} block={block} />
       ))}
     </>
   )
 }
 
-function FlowchartRow({ block }) {
+function FlowchartBlock({ block }) {
   if (block.type === 'input') {
     return (
-      <tr>
-        <td className="border-2 border-black px-4 py-2 text-center">
-          Leer {block.content.variable}
-        </td>
-      </tr>
+      <div className="border-b-2 border-black px-4 py-2 text-center">
+        Leer {block.content.variable}
+      </div>
     )
   }
 
   if (block.type === 'assignment') {
     return (
-      <tr>
-        <td className="border-2 border-black px-4 py-2 text-center">
-          {block.content.variable} &larr; {block.content.expression}
-        </td>
-      </tr>
+      <div className="border-b-2 border-black px-4 py-2 text-center">
+        {block.content.variable}={block.content.expression}
+      </div>
     )
   }
 
   if (block.type === 'output') {
     return (
-      <tr>
-        <td className="border-2 border-black px-4 py-2 text-center">
-          Escribir {block.content.expression}
-        </td>
-      </tr>
+      <div className="border-b-2 border-black px-4 py-2 text-center">
+        Escribir {block.content.expression}
+      </div>
     )
   }
 
   if (block.type === 'conditional') {
-    return <FlowchartConditionalRow block={block} />
+    return <ConditionalBlock block={block} />
   }
 
   if (block.type === 'while') {
-    return <FlowchartWhileRow block={block} />
+    return <WhileBlock block={block} />
   }
 
   return null
 }
 
-function FlowchartConditionalRow({ block }) {
+// Bloque condicional con triangulo superior (lineas desde esquinas al centro)
+function ConditionalBlock({ block }) {
   const trueBlocks = block.children.true || []
   const falseBlocks = block.children.false || []
-  
-  // Verificar si hay condicionales anidados en la rama falsa
-  const hasNestedConditional = falseBlocks.length === 1 && falseBlocks[0].type === 'conditional'
-
-  if (hasNestedConditional) {
-    // Renderizar condicional con anidamiento horizontal (como en la imagen)
-    return <FlowchartNestedConditional block={block} />
-  }
 
   return (
-    <tr>
-      <td className="border-2 border-black p-0">
-        <table className="w-full border-collapse">
-          <tbody>
-            {/* Fila del rombo/condicion */}
-            <tr>
-              <td colSpan={2} className="border-b-2 border-black p-0 relative">
-                <DecisionDiamond condition={block.content.condition} />
-              </td>
-            </tr>
-            {/* Etiquetas Si/No */}
-            <tr>
-              <td className="border-r-2 border-b-2 border-black px-2 py-1 text-center text-xs font-bold w-1/2">
-                Si
-              </td>
-              <td className="border-b-2 border-black px-2 py-1 text-center text-xs font-bold w-1/2">
-                No
-              </td>
-            </tr>
-            {/* Contenido de las ramas */}
-            <tr>
-              <td className="border-r-2 border-black p-0 align-top w-1/2">
-                <NestedBlocksTable blocks={trueBlocks} />
-              </td>
-              <td className="p-0 align-top w-1/2">
-                <NestedBlocksTable blocks={falseBlocks} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  )
-}
-
-function FlowchartNestedConditional({ block }) {
-  const trueBlocks = block.children.true || []
-  const nestedConditional = block.children.false[0]
-  const nestedTrueBlocks = nestedConditional.children.true || []
-  const nestedFalseBlocks = nestedConditional.children.false || []
-
-  return (
-    <tr>
-      <td className="border-2 border-black p-0">
-        <table className="w-full border-collapse">
-          <tbody>
-            {/* Primera condicion */}
-            <tr>
-              <td colSpan={3} className="border-b-2 border-black p-0 relative">
-                <DecisionDiamond condition={block.content.condition} />
-              </td>
-            </tr>
-            {/* Segunda condicion (anidada) en la rama No */}
-            <tr>
-              <td className="border-r-2 border-b-2 border-black px-2 py-1 text-center text-xs font-bold" style={{ width: '33%' }}>
-                Si
-              </td>
-              <td colSpan={2} className="border-b-2 border-black p-0 relative">
-                <DecisionDiamond condition={nestedConditional.content.condition} />
-              </td>
-            </tr>
-            {/* Etiquetas de la condicion anidada */}
-            <tr>
-              <td className="border-r-2 border-black" style={{ width: '33%' }}></td>
-              <td className="border-r-2 border-b-2 border-black px-2 py-1 text-center text-xs font-bold" style={{ width: '33%' }}>
-                Si
-              </td>
-              <td className="border-b-2 border-black px-2 py-1 text-center text-xs font-bold" style={{ width: '33%' }}>
-                No
-              </td>
-            </tr>
-            {/* Contenido de las tres ramas */}
-            <tr>
-              <td className="border-r-2 border-black p-0 align-top" style={{ width: '33%' }}>
-                <NestedBlocksTable blocks={trueBlocks} />
-              </td>
-              <td className="border-r-2 border-black p-0 align-top" style={{ width: '33%' }}>
-                <NestedBlocksTable blocks={nestedTrueBlocks} />
-              </td>
-              <td className="p-0 align-top" style={{ width: '33%' }}>
-                <NestedBlocksTable blocks={nestedFalseBlocks} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  )
-}
-
-function FlowchartWhileRow({ block }) {
-  const bodyBlocks = block.children.true || []
-
-  return (
-    <tr>
-      <td className="border-2 border-black p-0">
-        <table className="w-full border-collapse">
-          <tbody>
-            {/* Condicion del while */}
-            <tr>
-              <td className="border-b-2 border-black p-0 relative">
-                <DecisionDiamond condition={block.content.condition} isWhile />
-              </td>
-            </tr>
-            {/* Cuerpo del bucle */}
-            <tr>
-              <td className="p-0">
-                <div className="flex">
-                  {/* Barra lateral izquierda que indica el bucle */}
-                  <div className="w-4 bg-gray-200 border-r-2 border-black flex items-center justify-center">
-                    <div className="transform -rotate-90 text-xs font-bold whitespace-nowrap text-gray-500">
-                      REPETIR
-                    </div>
-                  </div>
-                  {/* Contenido del bucle */}
-                  <div className="flex-1">
-                    <NestedBlocksTable blocks={bodyBlocks} />
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-  )
-}
-
-function DecisionDiamond({ condition, isWhile = false }) {
-  return (
-    <div className="flex items-center justify-center py-3 px-2">
-      <div className="relative">
-        {/* Rombo usando bordes */}
-        <svg viewBox="0 0 120 60" className="w-full max-w-[200px] h-auto">
-          {/* Lineas diagonales que forman el rombo */}
-          <line x1="60" y1="5" x2="115" y2="30" stroke="black" strokeWidth="2" />
-          <line x1="115" y1="30" x2="60" y2="55" stroke="black" strokeWidth="2" />
-          <line x1="60" y1="55" x2="5" y2="30" stroke="black" strokeWidth="2" />
-          <line x1="5" y1="30" x2="60" y2="5" stroke="black" strokeWidth="2" />
-          {/* Texto de la condicion */}
-          <text x="60" y="34" textAnchor="middle" className="text-xs" style={{ fontSize: '10px' }}>
-            {condition}
-          </text>
+    <div className="border-b-2 border-black">
+      {/* Triangulo de decision */}
+      <div className="relative" style={{ height: '50px' }}>
+        <svg 
+          viewBox="0 0 200 50" 
+          className="w-full h-full" 
+          preserveAspectRatio="none"
+          style={{ display: 'block' }}
+        >
+          {/* Fondo blanco */}
+          <rect x="0" y="0" width="200" height="50" fill="white" />
+          
+          {/* Linea diagonal izquierda (desde esquina superior izquierda al centro inferior) */}
+          <line x1="0" y1="0" x2="100" y2="50" stroke="black" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+          
+          {/* Linea diagonal derecha (desde esquina superior derecha al centro inferior) */}
+          <line x1="200" y1="0" x2="100" y2="50" stroke="black" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+          
+          {/* Texto V (Verdadero) - lado izquierdo */}
+          <text x="25" y="45" textAnchor="middle" style={{ fontSize: '14px', fontWeight: 'bold' }}>V</text>
+          
+          {/* Texto F (Falso) - lado derecho */}
+          <text x="175" y="45" textAnchor="middle" style={{ fontSize: '14px', fontWeight: 'bold' }}>F</text>
+          
+          {/* Condicion en el centro */}
+          <text x="100" y="30" textAnchor="middle" style={{ fontSize: '12px' }}>{block.content.condition}</text>
         </svg>
+        
+        {/* Borde inferior */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+      </div>
+      
+      {/* Ramas V y F */}
+      <div className="flex">
+        {/* Rama Verdadero (izquierda) */}
+        <div className="flex-1 border-r-2 border-black">
+          <NestedBlocks blocks={trueBlocks} />
+        </div>
+        
+        {/* Rama Falso (derecha) */}
+        <div className="flex-1">
+          <NestedBlocks blocks={falseBlocks} />
+        </div>
       </div>
     </div>
   )
 }
 
-function NestedBlocksTable({ blocks }) {
+// Bloque while con L invertida
+function WhileBlock({ block }) {
+  const bodyBlocks = block.children.true || []
+
+  return (
+    <div className="border-b-2 border-black">
+      {/* Condicion del while */}
+      <div className="px-4 py-2 text-center border-b-2 border-black bg-blue-50">
+        {block.content.condition}
+      </div>
+      
+      {/* Cuerpo del while con L invertida */}
+      <div className="flex">
+        {/* Barra vertical izquierda (parte de la L invertida) */}
+        <div className="w-6 border-r-2 border-black bg-blue-50" />
+        
+        {/* Contenido del bucle */}
+        <div className="flex-1">
+          <NestedBlocks blocks={bodyBlocks} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Bloques anidados
+function NestedBlocks({ blocks }) {
   if (blocks.length === 0) {
     return <div className="min-h-[30px]" />
   }
 
   return (
-    <table className="w-full border-collapse">
-      <tbody>
-        {blocks.map((block) => (
-          <NestedBlockRow key={block.id} block={block} />
-        ))}
-      </tbody>
-    </table>
+    <>
+      {blocks.map((block) => (
+        <NestedBlock key={block.id} block={block} />
+      ))}
+    </>
   )
 }
 
-function NestedBlockRow({ block }) {
+function NestedBlock({ block }) {
   if (block.type === 'input') {
     return (
-      <tr>
-        <td className="border-b border-black px-2 py-2 text-center text-sm">
-          Leer {block.content.variable}
-        </td>
-      </tr>
+      <div className="border-b border-black px-3 py-2 text-center text-sm">
+        Leer {block.content.variable}
+      </div>
     )
   }
 
   if (block.type === 'assignment') {
     return (
-      <tr>
-        <td className="border-b border-black px-2 py-2 text-center text-sm">
-          {block.content.variable} &larr; {block.content.expression}
-        </td>
-      </tr>
+      <div className="border-b border-black px-3 py-2 text-center text-sm">
+        {block.content.variable}={block.content.expression}
+      </div>
     )
   }
 
   if (block.type === 'output') {
     return (
-      <tr>
-        <td className="border-b border-black px-2 py-2 text-center text-sm">
-          Escribir<br/>{block.content.expression}
-        </td>
-      </tr>
+      <div className="border-b border-black px-3 py-2 text-center text-sm">
+        Escribir {block.content.expression}
+      </div>
     )
   }
 
   if (block.type === 'conditional') {
-    return (
-      <tr>
-        <td className="p-0">
-          <NestedConditionalTable block={block} />
-        </td>
-      </tr>
-    )
+    return <NestedConditionalBlock block={block} />
   }
 
   if (block.type === 'while') {
-    return (
-      <tr>
-        <td className="border-b border-black p-0">
-          <table className="w-full border-collapse">
-            <tbody>
-              <tr>
-                <td className="border-b border-black p-0">
-                  <DecisionDiamond condition={block.content.condition} isWhile />
-                </td>
-              </tr>
-              <tr>
-                <td className="p-0">
-                  <NestedBlocksTable blocks={block.children.true || []} />
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    )
+    return <NestedWhileBlock block={block} />
   }
 
   return null
 }
 
-function NestedConditionalTable({ block }) {
+// Condicional anidado
+function NestedConditionalBlock({ block }) {
   const trueBlocks = block.children.true || []
   const falseBlocks = block.children.false || []
 
   return (
-    <table className="w-full border-collapse">
-      <tbody>
-        <tr>
-          <td colSpan={2} className="border-b border-black p-0">
-            <DecisionDiamond condition={block.content.condition} />
-          </td>
-        </tr>
-        <tr>
-          <td className="border-r border-b border-black px-1 py-1 text-center text-xs font-bold w-1/2">
-            Si
-          </td>
-          <td className="border-b border-black px-1 py-1 text-center text-xs font-bold w-1/2">
-            No
-          </td>
-        </tr>
-        <tr>
-          <td className="border-r border-black p-0 align-top w-1/2">
-            <NestedBlocksTable blocks={trueBlocks} />
-          </td>
-          <td className="p-0 align-top w-1/2">
-            <NestedBlocksTable blocks={falseBlocks} />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div className="border-b border-black">
+      {/* Triangulo de decision */}
+      <div className="relative" style={{ height: '40px' }}>
+        <svg 
+          viewBox="0 0 200 40" 
+          className="w-full h-full" 
+          preserveAspectRatio="none"
+          style={{ display: 'block' }}
+        >
+          <rect x="0" y="0" width="200" height="40" fill="white" />
+          <line x1="0" y1="0" x2="100" y2="40" stroke="black" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <line x1="200" y1="0" x2="100" y2="40" stroke="black" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          <text x="20" y="35" textAnchor="middle" style={{ fontSize: '12px', fontWeight: 'bold' }}>V</text>
+          <text x="180" y="35" textAnchor="middle" style={{ fontSize: '12px', fontWeight: 'bold' }}>F</text>
+          <text x="100" y="25" textAnchor="middle" style={{ fontSize: '11px' }}>{block.content.condition}</text>
+        </svg>
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-black" />
+      </div>
+      
+      {/* Ramas */}
+      <div className="flex">
+        <div className="flex-1 border-r border-black">
+          <NestedBlocks blocks={trueBlocks} />
+        </div>
+        <div className="flex-1">
+          <NestedBlocks blocks={falseBlocks} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// While anidado
+function NestedWhileBlock({ block }) {
+  const bodyBlocks = block.children.true || []
+
+  return (
+    <div className="border-b border-black">
+      {/* Condicion */}
+      <div className="px-2 py-1 text-center text-sm border-b border-black bg-blue-50">
+        {block.content.condition}
+      </div>
+      
+      {/* Cuerpo con L */}
+      <div className="flex">
+        <div className="w-4 border-r border-black bg-blue-50" />
+        <div className="flex-1">
+          <NestedBlocks blocks={bodyBlocks} />
+        </div>
+      </div>
+    </div>
   )
 }
