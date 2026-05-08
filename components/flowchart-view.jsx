@@ -111,15 +111,19 @@ function ConditionalBlock({ block }) {
   const trueBlocks = block.children.true || []
   const falseBlocks = block.children.false || []
 
+  // Calcular altura maxima de ambas ramas para igualarlas
+  const trueHasContent = trueBlocks.length > 0
+  const falseHasContent = falseBlocks.length > 0
+
   return (
     <div className="border-b-2 border-black">
-      {/* Triangulo de decision */}
-      <div className="relative" style={{ height: '50px' }}>
+      {/* Triangulo de decision con ramas */}
+      <div className="relative">
         <svg 
           viewBox="0 0 200 50" 
-          className="w-full h-full" 
+          className="w-full" 
           preserveAspectRatio="none"
-          style={{ display: 'block' }}
+          style={{ display: 'block', height: '50px' }}
         >
           {/* Fondo blanco */}
           <rect x="0" y="0" width="200" height="50" fill="white" />
@@ -139,21 +143,24 @@ function ConditionalBlock({ block }) {
           {/* Condicion en el centro */}
           <text x="100" y="30" textAnchor="middle" style={{ fontSize: '12px' }}>{block.content.condition}</text>
         </svg>
-        
-        {/* Borde inferior */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
       </div>
       
-      {/* Ramas V y F */}
-      <div className="flex">
-        {/* Rama Verdadero (izquierda) */}
-        <div className="flex-1 border-r-2 border-black">
-          <NestedBlocks blocks={trueBlocks} />
+      {/* Ramas V y F - contenedor con linea divisoria central */}
+      <div className="flex" style={{ minHeight: trueHasContent || falseHasContent ? 'auto' : '30px' }}>
+        {/* Rama Verdadero (izquierda) - ocupa exactamente la mitad */}
+        <div className="w-1/2 border-r-2 border-black">
+          {trueBlocks.map((b) => (
+            <NestedBlock key={b.id} block={b} />
+          ))}
+          {!trueHasContent && <div className="min-h-[30px]" />}
         </div>
         
-        {/* Rama Falso (derecha) */}
-        <div className="flex-1">
-          <NestedBlocks blocks={falseBlocks} />
+        {/* Rama Falso (derecha) - ocupa exactamente la mitad */}
+        <div className="w-1/2">
+          {falseBlocks.map((b) => (
+            <NestedBlock key={b.id} block={b} />
+          ))}
+          {!falseHasContent && <div className="min-h-[30px]" />}
         </div>
       </div>
     </div>
@@ -163,6 +170,7 @@ function ConditionalBlock({ block }) {
 // Bloque while con L invertida
 function WhileBlock({ block }) {
   const bodyBlocks = block.children.true || []
+  const hasContent = bodyBlocks.length > 0
 
   return (
     <div className="border-b-2 border-black">
@@ -178,25 +186,13 @@ function WhileBlock({ block }) {
         
         {/* Contenido del bucle */}
         <div className="flex-1">
-          <NestedBlocks blocks={bodyBlocks} />
+          {bodyBlocks.map((b) => (
+            <NestedBlock key={b.id} block={b} />
+          ))}
+          {!hasContent && <div className="min-h-[30px]" />}
         </div>
       </div>
     </div>
-  )
-}
-
-// Bloques anidados
-function NestedBlocks({ blocks }) {
-  if (blocks.length === 0) {
-    return <div className="min-h-[30px]" />
-  }
-
-  return (
-    <>
-      {blocks.map((block) => (
-        <NestedBlock key={block.id} block={block} />
-      ))}
-    </>
   )
 }
 
@@ -240,16 +236,18 @@ function NestedBlock({ block }) {
 function NestedConditionalBlock({ block }) {
   const trueBlocks = block.children.true || []
   const falseBlocks = block.children.false || []
+  const trueHasContent = trueBlocks.length > 0
+  const falseHasContent = falseBlocks.length > 0
 
   return (
     <div className="border-b border-black">
       {/* Triangulo de decision */}
-      <div className="relative" style={{ height: '40px' }}>
+      <div className="relative">
         <svg 
           viewBox="0 0 200 40" 
-          className="w-full h-full" 
+          className="w-full" 
           preserveAspectRatio="none"
-          style={{ display: 'block' }}
+          style={{ display: 'block', height: '40px' }}
         >
           <rect x="0" y="0" width="200" height="40" fill="white" />
           <line x1="0" y1="0" x2="100" y2="40" stroke="black" strokeWidth="1" vectorEffect="non-scaling-stroke" />
@@ -258,16 +256,21 @@ function NestedConditionalBlock({ block }) {
           <text x="180" y="35" textAnchor="middle" style={{ fontSize: '12px', fontWeight: 'bold' }}>F</text>
           <text x="100" y="25" textAnchor="middle" style={{ fontSize: '11px' }}>{block.content.condition}</text>
         </svg>
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-black" />
       </div>
       
-      {/* Ramas */}
-      <div className="flex">
-        <div className="flex-1 border-r border-black">
-          <NestedBlocks blocks={trueBlocks} />
+      {/* Ramas - cada una ocupa exactamente la mitad */}
+      <div className="flex" style={{ minHeight: trueHasContent || falseHasContent ? 'auto' : '25px' }}>
+        <div className="w-1/2 border-r border-black">
+          {trueBlocks.map((b) => (
+            <NestedBlock key={b.id} block={b} />
+          ))}
+          {!trueHasContent && <div className="min-h-[25px]" />}
         </div>
-        <div className="flex-1">
-          <NestedBlocks blocks={falseBlocks} />
+        <div className="w-1/2">
+          {falseBlocks.map((b) => (
+            <NestedBlock key={b.id} block={b} />
+          ))}
+          {!falseHasContent && <div className="min-h-[25px]" />}
         </div>
       </div>
     </div>
@@ -277,6 +280,7 @@ function NestedConditionalBlock({ block }) {
 // While anidado
 function NestedWhileBlock({ block }) {
   const bodyBlocks = block.children.true || []
+  const hasContent = bodyBlocks.length > 0
 
   return (
     <div className="border-b border-black">
@@ -289,7 +293,10 @@ function NestedWhileBlock({ block }) {
       <div className="flex">
         <div className="w-4 border-r border-black bg-blue-50" />
         <div className="flex-1">
-          <NestedBlocks blocks={bodyBlocks} />
+          {bodyBlocks.map((b) => (
+            <NestedBlock key={b.id} block={b} />
+          ))}
+          {!hasContent && <div className="min-h-[25px]" />}
         </div>
       </div>
     </div>
