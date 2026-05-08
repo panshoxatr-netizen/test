@@ -5,7 +5,7 @@
 export function FlowchartView({ blocks }) {
   // Recolectar todas las variables de entrada
   const inputVariables = []
-  
+
   const collectInputs = (blockList) => {
     for (const block of blockList) {
       if (block.type === 'input') {
@@ -39,17 +39,17 @@ export function FlowchartView({ blocks }) {
           <div className="border-b-2 border-black px-4 py-2 text-center bg-gray-100">
             Inicio
           </div>
-          
+
           {/* Declaracion de variables si hay entradas */}
           {inputVariables.length > 0 && (
             <div className="border-b-2 border-black px-4 py-2 text-center">
               Entero: {inputVariables.join(', ')}
             </div>
           )}
-          
+
           {/* Bloques del diagrama */}
           <FlowchartBlocks blocks={blocks} />
-          
+
           {/* Fin */}
           <div className="px-4 py-2 text-center bg-gray-100">
             Fin algoritmo
@@ -119,32 +119,32 @@ function ConditionalBlock({ block }) {
     <div className="border-b-2 border-black">
       {/* Triangulo de decision con ramas */}
       <div className="relative">
-        <svg 
-          viewBox="0 0 200 50" 
-          className="w-full" 
+        <svg
+          viewBox="0 0 200 50"
+          className="w-full"
           preserveAspectRatio="none"
           style={{ display: 'block', height: '50px' }}
         >
           {/* Fondo blanco */}
           <rect x="0" y="0" width="200" height="50" fill="white" />
-          
+
           {/* Linea diagonal izquierda (desde esquina superior izquierda al centro inferior) */}
           <line x1="0" y1="0" x2="100" y2="50" stroke="black" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-          
+
           {/* Linea diagonal derecha (desde esquina superior derecha al centro inferior) */}
           <line x1="200" y1="0" x2="100" y2="50" stroke="black" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-          
+
           {/* Texto V (Verdadero) - lado izquierdo */}
           <text x="25" y="45" textAnchor="middle" style={{ fontSize: '14px', fontWeight: 'bold' }}>V</text>
-          
+
           {/* Texto F (Falso) - lado derecho */}
           <text x="175" y="45" textAnchor="middle" style={{ fontSize: '14px', fontWeight: 'bold' }}>F</text>
-          
+
           {/* Condicion en el centro */}
           <text x="100" y="30" textAnchor="middle" style={{ fontSize: '12px' }}>{block.content.condition}</text>
         </svg>
       </div>
-      
+
       {/* Ramas V y F - contenedor con linea divisoria central */}
       <div className="flex" style={{ minHeight: trueHasContent || falseHasContent ? 'auto' : '30px' }}>
         {/* Rama Verdadero (izquierda) - ocupa exactamente la mitad */}
@@ -154,7 +154,7 @@ function ConditionalBlock({ block }) {
           ))}
           {!trueHasContent && <div className="min-h-[30px]" />}
         </div>
-        
+
         {/* Rama Falso (derecha) - ocupa exactamente la mitad */}
         <div className="w-1/2">
           {falseBlocks.map((b) => (
@@ -178,12 +178,12 @@ function WhileBlock({ block }) {
       <div className="px-4 py-2 text-center border-b-2 border-black bg-blue-50">
         {block.content.condition}
       </div>
-      
+
       {/* Cuerpo del while con L invertida */}
       <div className="flex">
         {/* Barra vertical izquierda (parte de la L invertida) */}
         <div className="w-6 border-r-2 border-black bg-blue-50" />
-        
+
         {/* Contenido del bucle */}
         <div className="flex-1">
           {bodyBlocks.map((b) => (
@@ -199,7 +199,7 @@ function WhileBlock({ block }) {
 function NestedBlock({ block }) {
   if (block.type === 'input') {
     return (
-      <div className="border-b border-black px-3 py-2 text-center text-sm">
+      <div className="border-b border-black px-3 py-2 text-center text-wrap wrap-break-word text-sm">
         Leer {block.content.variable}
       </div>
     )
@@ -207,7 +207,7 @@ function NestedBlock({ block }) {
 
   if (block.type === 'assignment') {
     return (
-      <div className="border-b border-black px-3 py-2 text-center text-sm">
+      <div className="border-b border-black px-3 py-2 text-center text-wrap wrap-break-word text-sm">
         {block.content.variable}={block.content.expression}
       </div>
     )
@@ -215,7 +215,7 @@ function NestedBlock({ block }) {
 
   if (block.type === 'output') {
     return (
-      <div className="border-b border-black px-3 py-2 text-center text-sm">
+      <div className="border-b border-black px-3 py-2 text-center text-wrap wrap-break-word text-sm">
         Escribir {block.content.expression}
       </div>
     )
@@ -243,9 +243,9 @@ function NestedConditionalBlock({ block }) {
     <div className="border-b border-black">
       {/* Triangulo de decision */}
       <div className="relative">
-        <svg 
-          viewBox="0 0 200 40" 
-          className="w-full" 
+        <svg
+          viewBox="0 0 200 40"
+          className="w-full"
           preserveAspectRatio="none"
           style={{ display: 'block', height: '40px' }}
         >
@@ -257,7 +257,7 @@ function NestedConditionalBlock({ block }) {
           <text x="100" y="25" textAnchor="middle" style={{ fontSize: '11px' }}>{block.content.condition}</text>
         </svg>
       </div>
-      
+
       {/* Ramas - cada una ocupa exactamente la mitad */}
       <div className="flex" style={{ minHeight: trueHasContent || falseHasContent ? 'auto' : '25px' }}>
         <div className="w-1/2 border-r border-black">
@@ -288,7 +288,7 @@ function NestedWhileBlock({ block }) {
       <div className="px-2 py-1 text-center text-sm border-b border-black bg-blue-50">
         {block.content.condition}
       </div>
-      
+
       {/* Cuerpo con L */}
       <div className="flex">
         <div className="w-4 border-r border-black bg-blue-50" />
