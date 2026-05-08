@@ -582,7 +582,7 @@ function WhileBlock({
       
       {/* Body */}
       <div className="p-2 ml-4 border-l-4 border-rose-300 overflow-auto">
-        <div className="space-y-2 min-h-[60px]">
+        <div className="space-y-2 min-h-[120px]">
           {block.children.true.map(child => (
             <BlockRenderer
               key={child.id}
