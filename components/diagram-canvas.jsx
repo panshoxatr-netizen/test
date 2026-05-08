@@ -85,8 +85,7 @@ function BlockRenderer({
   onUpdate, 
   onDelete,
   onUpdateChild,
-  onDeleteChild,
-  nested = false
+  onDeleteChild
 }) {
   const style = blockStyles[block.type]
   const activeClass = isActive ? 'ring-4 ring-primary ring-offset-2 animate-pulse' : ''
@@ -103,7 +102,6 @@ function BlockRenderer({
         activeClass={activeClass}
         onUpdate={onUpdate}
         onDelete={onDelete}
-        nested={nested}
       />
     )
   }
@@ -116,7 +114,6 @@ function BlockRenderer({
         activeClass={activeClass}
         onUpdate={onUpdate}
         onDelete={onDelete}
-        nested={nested}
       />
     )
   }
@@ -129,7 +126,6 @@ function BlockRenderer({
         activeClass={activeClass}
         onUpdate={onUpdate}
         onDelete={onDelete}
-        nested={nested}
       />
     )
   }
@@ -148,7 +144,6 @@ function BlockRenderer({
         onDelete={onDelete}
         onUpdateChild={onUpdateChild}
         onDeleteChild={onDeleteChild}
-        nested={nested}
       />
     )
   }
@@ -167,7 +162,6 @@ function BlockRenderer({
         onDelete={onDelete}
         onUpdateChild={onUpdateChild}
         onDeleteChild={onDeleteChild}
-        nested={nested}
       />
     )
   }
@@ -283,7 +277,7 @@ function AssignmentBlock({ block, style, activeClass, onUpdate, onDelete }) {
   )
 }
 
-function OutputBlock({ block, style, activeClass, onUpdate, onDelete, nested }) {
+function OutputBlock({ block, style, activeClass, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false)
   const [expression, setExpression] = useState(block.content.expression)
 
@@ -299,11 +293,9 @@ function OutputBlock({ block, style, activeClass, onUpdate, onDelete, nested }) 
           <GripVertical className="w-4 h-4 opacity-50" />
           <span>{style.label}</span>
         </div>
-        {!nested && (
-          <button onClick={onDelete} className="hover:bg-white/20 p-1 rounded">
-            <X className="w-4 h-4" />
-          </button>
-        )}
+        <button onClick={onDelete} className="hover:bg-white/20 p-1 rounded">
+          <X className="w-4 h-4" />
+        </button>
       </div>
       <div className="p-3">
         {editing ? (
@@ -346,8 +338,7 @@ function ConditionalBlock({
   onUpdate, 
   onDelete,
   onUpdateChild,
-  onDeleteChild,
-  nested
+  onDeleteChild
 }) {
   const [editing, setEditing] = useState(false)
   const [condition, setCondition] = useState(block.content.condition)
@@ -378,11 +369,9 @@ function ConditionalBlock({
           <GripVertical className="w-4 h-4 opacity-50" />
           <span>{style.label}</span>
         </div>
-        {!nested && (
-          <button onClick={onDelete} className="hover:bg-white/20 p-1 rounded">
-            <X className="w-4 h-4" />
-          </button>
-        )}
+        <button onClick={onDelete} className="hover:bg-white/20 p-1 rounded">
+          <X className="w-4 h-4" />
+        </button>
       </div>
       
       {/* Condition */}
@@ -430,8 +419,7 @@ function ConditionalBlock({
                 onDelete={() => onDeleteChild(child.id)}
                 onUpdateChild={onUpdateChild}
                 onDeleteChild={onDeleteChild}
-                nested
-              />
+                />
             ))}
             <AddBlockButton onAdd={(type) => addChildBlock('true', type)} />
           </div>
@@ -451,7 +439,6 @@ function ConditionalBlock({
                 onDelete={() => onDeleteChild(child.id)}
                 onUpdateChild={onUpdateChild}
                 onDeleteChild={onDeleteChild}
-                nested
               />
             ))}
             <AddBlockButton onAdd={(type) => addChildBlock('false', type)} />
@@ -473,8 +460,7 @@ function WhileBlock({
   onUpdate, 
   onDelete,
   onUpdateChild,
-  onDeleteChild,
-  nested
+  onDeleteChild
 }) {
   const [editing, setEditing] = useState(false)
   const [condition, setCondition] = useState(block.content.condition)
@@ -505,11 +491,9 @@ function WhileBlock({
           <GripVertical className="w-4 h-4 opacity-50" />
           <span>{style.label}</span>
         </div>
-        {!nested && (
-          <button onClick={onDelete} className="hover:bg-white/20 p-1 rounded">
-            <X className="w-4 h-4" />
-          </button>
-        )}
+        <button onClick={onDelete} className="hover:bg-white/20 p-1 rounded">
+          <X className="w-4 h-4" />
+        </button>
       </div>
       
       {/* Condition */}
@@ -553,12 +537,11 @@ function WhileBlock({
               currentStep={currentStep}
               onUpdate={(updates) => onUpdateChild(child.id, updates)}
               onDelete={() => onDeleteChild(child.id)}
-              onUpdateChild={onUpdateChild}
-              onDeleteChild={onDeleteChild}
-              nested
-            />
-          ))}
-          <AddBlockButton onAdd={addChildBlock} />
+onUpdateChild={onUpdateChild}
+                onDeleteChild={onDeleteChild}
+              />
+            ))}
+            <AddBlockButton onAdd={addChildBlock} />
         </div>
       </div>
     </div>
