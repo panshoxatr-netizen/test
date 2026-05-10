@@ -109,8 +109,14 @@ export default function Home() {
         blockId,
         action: `Error: ${message}`,
         variables: { ...execution.variables },
-        isError: true
+        isError: type === 'error'
       })
+      
+      // Si es un error (no warning), mostrar alert y marcar para detener
+      if (type === 'error') {
+        alert(`Error en la ejecucion:\n${message}`)
+        stopRequestedRef.current = true
+      }
     }
 
     const executeBlocks = async (blockList, setStep) => {
@@ -136,8 +142,7 @@ export default function Home() {
           // Validar nombre de variable
           if (!varName || varName.trim() === '') {
             addError(block.id, 'Nombre de variable vacio en bloque de entrada')
-            execution.stepIndex++
-            continue
+            return false
           }
 
           const userInput = prompt(`Ingrese valor para ${varName}:`)
@@ -184,34 +189,34 @@ export default function Home() {
           // Validar nombre de variable
           if (!variable || variable.trim() === '') {
             addError(block.id, 'Nombre de variable vacio en bloque de asignacion')
-            execution.stepIndex++
-            continue
+            return false
           }
 
           // Validar expresion
           if (!expression || expression.trim() === '') {
             addError(block.id, `Expresion vacia para variable "${variable}"`)
-            execution.stepIndex++
-            continue
+            return false
           }
 
           try {
             const { value, undefinedVars } = evaluateExpression(expression, execution.variables)
             
+            // Variables no definidas ahora son errores que detienen la ejecucion
             if (undefinedVars.length > 0) {
-              addError(block.id, `Variables no definidas: ${undefinedVars.join(', ')}`, 'warning')
+              addError(block.id, `Variables no definidas: ${undefinedVars.join(', ')}`)
+              return false
             }
             
             execution.variables[variable] = value
             execution.history.push({
               step: execution.stepIndex,
               blockId: block.id,
-              action: `Asignacion: ${variable} = ${value}${undefinedVars.length > 0 ? ' (con advertencias)' : ''}`,
-              variables: { ...execution.variables },
-              isWarning: undefinedVars.length > 0
+              action: `Asignacion: ${variable} = ${value}`,
+              variables: { ...execution.variables }
             })
           } catch (e) {
             addError(block.id, `Error al evaluar "${expression}": ${e.message}`)
+            return false
           }
         } else if (block.type === 'output') {
           const { expression } = block.content
@@ -219,15 +224,16 @@ export default function Home() {
           // Validar expresion
           if (!expression || expression.trim() === '') {
             addError(block.id, 'Expresion vacia en bloque de salida')
-            execution.stepIndex++
-            continue
+            return false
           }
 
           try {
             const { value, undefinedVars } = evaluateExpression(expression, execution.variables)
             
+            // Variables no definidas ahora son errores que detienen la ejecucion
             if (undefinedVars.length > 0) {
-              addError(block.id, `Variables no definidas en salida: ${undefinedVars.join(', ')}`, 'warning')
+              addError(block.id, `Variables no definidas en salida: ${undefinedVars.join(', ')}`)
+              return false
             }
             
             execution.outputs.push(value)
@@ -235,35 +241,35 @@ export default function Home() {
               step: execution.stepIndex,
               blockId: block.id,
               action: `Salida: ${typeof value === 'string' ? `"${value}"` : value}`,
-              variables: { ...execution.variables },
-              isWarning: undefinedVars.length > 0
+              variables: { ...execution.variables }
             })
             alert(`Salida: ${value}`)
           } catch (e) {
             addError(block.id, `Error en salida: ${e.message}`)
+            return false
           }
         } else if (block.type === 'conditional') {
           const { condition } = block.content
 
           if (!condition || condition.trim() === '') {
             addError(block.id, 'Condicion vacia en bloque condicional')
-            execution.stepIndex++
-            continue
+            return false
           }
 
           try {
             const { value: conditionResult, undefinedVars } = evaluateCondition(condition, execution.variables)
             
+            // Variables no definidas ahora son errores que detienen la ejecucion
             if (undefinedVars.length > 0) {
-              addError(block.id, `Variables no definidas en condicion: ${undefinedVars.join(', ')}`, 'warning')
+              addError(block.id, `Variables no definidas en condicion: ${undefinedVars.join(', ')}`)
+              return false
             }
             
             execution.history.push({
               step: execution.stepIndex,
               blockId: block.id,
               action: `Condicion: ${condition} → ${conditionResult}`,
-              variables: { ...execution.variables },
-              isWarning: undefinedVars.length > 0
+              variables: { ...execution.variables }
             })
             execution.stepIndex++
             
@@ -277,14 +283,14 @@ export default function Home() {
             continue
           } catch (e) {
             addError(block.id, `Error en condicion: ${e.message}`)
+            return false
           }
         } else if (block.type === 'while') {
           const { condition } = block.content
 
           if (!condition || condition.trim() === '') {
             addError(block.id, 'Condicion vacia en bloque mientras')
-            execution.stepIndex++
-            continue
+            return false
           }
 
           let iterations = 0
@@ -292,6 +298,12 @@ export default function Home() {
           
           try {
             let { value: conditionResult, undefinedVars } = evaluateCondition(condition, execution.variables)
+            
+            // Variables no definidas ahora son errores que detienen la ejecucion
+            if (undefinedVars.length > 0) {
+              addError(block.id, `Variables no definidas en condicion while: ${undefinedVars.join(', ')}`)
+              return false
+            }
             
             while (conditionResult && iterations < maxIterations) {
               if (stopRequestedRef.current) {
@@ -303,10 +315,6 @@ export default function Home() {
                   isStopped: true
                 })
                 return false
-              }
-
-              if (undefinedVars.length > 0 && iterations === 0) {
-                addError(block.id, `Variables no definidas en condicion while: ${undefinedVars.join(', ')}`, 'warning')
               }
               
               execution.history.push({
@@ -328,10 +336,17 @@ export default function Home() {
               const evalResult = evaluateCondition(condition, execution.variables)
               conditionResult = evalResult.value
               undefinedVars = evalResult.undefinedVars
+              
+              // Si hay variables no definidas en re-evaluacion, tambien es error
+              if (undefinedVars.length > 0) {
+                addError(block.id, `Variables no definidas en condicion while: ${undefinedVars.join(', ')}`)
+                return false
+              }
             }
             
             if (iterations >= maxIterations) {
               addError(block.id, `Bucle infinito detectado (${maxIterations} iteraciones maximas alcanzadas)`)
+              return false
             }
             
             execution.history.push({
@@ -343,6 +358,7 @@ export default function Home() {
             continue
           } catch (e) {
             addError(block.id, `Error en bucle while: ${e.message}`)
+            return false
           }
         }
         
