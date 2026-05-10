@@ -49,8 +49,8 @@ export function DiagramCanvas({
         <button
           onClick={() => setActiveTab('config')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'config'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+            ? 'border-b-2 border-primary text-primary'
+            : 'text-muted-foreground hover:text-foreground'
             }`}
         >
           <Settings className="w-4 h-4" />
@@ -59,8 +59,8 @@ export function DiagramCanvas({
         <button
           onClick={() => setActiveTab('flowchart')}
           className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'flowchart'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-muted-foreground hover:text-foreground'
+            ? 'border-b-2 border-primary text-primary'
+            : 'text-muted-foreground hover:text-foreground'
             }`}
         >
           <GitBranch className="w-4 h-4" />
@@ -245,7 +245,7 @@ function InputBlock({ block, style, activeClass, onUpdate, onDelete }) {
       </div>
       <div className="p-3">
         {editing ? (
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 overflow-auto">
             <input
               type="text"
               value={value}
@@ -353,7 +353,7 @@ function OutputBlock({ block, style, activeClass, onUpdate, onDelete }) {
       </div>
       <div className="p-3">
         {editing ? (
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 overflow-auto">
             <input
               type="text"
               value={expression}
@@ -431,7 +431,7 @@ function ConditionalBlock({
       {/* Condition */}
       <div className="p-3 border-b-2 border-purple-300">
         {editing ? (
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 overflow-auto">
             <input
               type="text"
               value={condition}
@@ -553,7 +553,7 @@ function WhileBlock({
       {/* Condition */}
       <div className="p-3 border-b-2 border-rose-300">
         {editing ? (
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 overflow-auto">
             <input
               type="text"
               value={condition}
