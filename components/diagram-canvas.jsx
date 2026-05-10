@@ -32,13 +32,13 @@ const blockStyles = {
   }
 }
 
-export function DiagramCanvas({ 
-  blocks, 
-  currentStep, 
+export function DiagramCanvas({
+  blocks,
+  currentStep,
   currentBlockId,
-  executionHistory, 
-  onUpdateBlock, 
-  onDeleteBlock 
+  executionHistory,
+  onUpdateBlock,
+  onDeleteBlock
 }) {
   const [activeTab, setActiveTab] = useState('config')
 
@@ -48,22 +48,20 @@ export function DiagramCanvas({
       <div className="flex border-b border-border mb-4">
         <button
           onClick={() => setActiveTab('config')}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-            activeTab === 'config'
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'config'
               ? 'border-b-2 border-primary text-primary'
               : 'text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           <Settings className="w-4 h-4" />
           Configuracion
         </button>
         <button
           onClick={() => setActiveTab('flowchart')}
-          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${
-            activeTab === 'flowchart'
+          className={`flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors ${activeTab === 'flowchart'
               ? 'border-b-2 border-primary text-primary'
               : 'text-muted-foreground hover:text-foreground'
-          }`}
+            }`}
         >
           <GitBranch className="w-4 h-4" />
           Diagrama de Flujo
@@ -87,13 +85,13 @@ export function DiagramCanvas({
   )
 }
 
-function ConfigurationView({ 
-  blocks, 
-  currentStep, 
+function ConfigurationView({
+  blocks,
+  currentStep,
   currentBlockId,
-  executionHistory, 
-  onUpdateBlock, 
-  onDeleteBlock 
+  executionHistory,
+  onUpdateBlock,
+  onDeleteBlock
 }) {
   if (blocks.length === 0) {
     return (
@@ -132,13 +130,13 @@ function ConfigurationView({
   )
 }
 
-function BlockRenderer({ 
-  block, 
-  isActive, 
+function BlockRenderer({
+  block,
+  isActive,
   currentBlockId,
-  executionHistory, 
-  currentStep, 
-  onUpdate, 
+  executionHistory,
+  currentStep,
+  onUpdate,
   onDelete,
   onUpdateChild,
   onDeleteChild
@@ -263,7 +261,7 @@ function InputBlock({ block, style, activeClass, onUpdate, onDelete }) {
             </button>
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setEditing(true)}
             className="cursor-pointer hover:bg-white/50 p-2 rounded text-center font-mono"
           >
@@ -321,7 +319,7 @@ function AssignmentBlock({ block, style, activeClass, onUpdate, onDelete }) {
             </button>
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setEditing(true)}
             className="cursor-pointer hover:bg-white/50 p-2 rounded text-center font-mono"
           >
@@ -355,7 +353,7 @@ function OutputBlock({ block, style, activeClass, onUpdate, onDelete }) {
       </div>
       <div className="p-3">
         {editing ? (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <input
               type="text"
               value={expression}
@@ -371,7 +369,7 @@ function OutputBlock({ block, style, activeClass, onUpdate, onDelete }) {
             </button>
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setEditing(true)}
             className="cursor-pointer hover:bg-white/50 p-2 rounded text-center font-mono"
           >
@@ -383,15 +381,15 @@ function OutputBlock({ block, style, activeClass, onUpdate, onDelete }) {
   )
 }
 
-function ConditionalBlock({ 
-  block, 
-  style, 
-  activeClass, 
+function ConditionalBlock({
+  block,
+  style,
+  activeClass,
   isChildActive,
   currentBlockId,
   executionHistory,
   currentStep,
-  onUpdate, 
+  onUpdate,
   onDelete,
   onUpdateChild,
   onDeleteChild
@@ -429,11 +427,11 @@ function ConditionalBlock({
           <X className="w-4 h-4" />
         </button>
       </div>
-      
+
       {/* Condition */}
       <div className="p-3 border-b-2 border-purple-300">
         {editing ? (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <input
               type="text"
               value={condition}
@@ -449,7 +447,7 @@ function ConditionalBlock({
             </button>
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setEditing(true)}
             className="cursor-pointer hover:bg-white/50 p-2 rounded text-center font-mono"
           >
@@ -457,7 +455,7 @@ function ConditionalBlock({
           </div>
         )}
       </div>
-      
+
       {/* Branches */}
       <div className="grid grid-cols-2 divide-x-2 divide-purple-300 overflow-auto">
         <div className="p-2">
@@ -475,7 +473,7 @@ function ConditionalBlock({
                 onDelete={() => onDeleteChild(child.id)}
                 onUpdateChild={onUpdateChild}
                 onDeleteChild={onDeleteChild}
-                />
+              />
             ))}
             <AddBlockButton onAdd={(type) => addChildBlock('true', type)} />
           </div>
@@ -505,15 +503,15 @@ function ConditionalBlock({
   )
 }
 
-function WhileBlock({ 
-  block, 
-  style, 
+function WhileBlock({
+  block,
+  style,
   activeClass,
   isChildActive,
   currentBlockId,
   executionHistory,
   currentStep,
-  onUpdate, 
+  onUpdate,
   onDelete,
   onUpdateChild,
   onDeleteChild
@@ -551,11 +549,11 @@ function WhileBlock({
           <X className="w-4 h-4" />
         </button>
       </div>
-      
+
       {/* Condition */}
       <div className="p-3 border-b-2 border-rose-300">
         {editing ? (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <input
               type="text"
               value={condition}
@@ -571,7 +569,7 @@ function WhileBlock({
             </button>
           </div>
         ) : (
-          <div 
+          <div
             onClick={() => setEditing(true)}
             className="cursor-pointer hover:bg-white/50 p-2 rounded text-center font-mono"
           >
@@ -579,7 +577,7 @@ function WhileBlock({
           </div>
         )}
       </div>
-      
+
       {/* Body */}
       <div className="p-2 ml-4 border-l-4 border-rose-300 overflow-auto">
         <div className="space-y-2 min-h-[120px]">
@@ -593,11 +591,11 @@ function WhileBlock({
               currentStep={currentStep}
               onUpdate={(updates) => onUpdateChild(child.id, updates)}
               onDelete={() => onDeleteChild(child.id)}
-onUpdateChild={onUpdateChild}
-                onDeleteChild={onDeleteChild}
-              />
-            ))}
-            <AddBlockButton onAdd={addChildBlock} />
+              onUpdateChild={onUpdateChild}
+              onDeleteChild={onDeleteChild}
+            />
+          ))}
+          <AddBlockButton onAdd={addChildBlock} />
         </div>
       </div>
     </div>
