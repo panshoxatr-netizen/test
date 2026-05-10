@@ -235,7 +235,7 @@ function InputBlock({ block, style, activeClass, onUpdate, onDelete }) {
   }
 
   return (
-    <div className={`border-2 rounded-lg overflow-hidden ${style.container} ${activeClass} transition-all`}>
+    <div className={`border-2 rounded-lg overflow-auto ${style.container} ${activeClass} transition-all`}>
       <div className={`${style.header} px-3 py-1 flex items-center justify-between text-sm font-medium`}>
         <div className="flex items-center gap-2">
           <GripVertical className="w-4 h-4 opacity-50" />
@@ -247,7 +247,7 @@ function InputBlock({ block, style, activeClass, onUpdate, onDelete }) {
       </div>
       <div className="p-3">
         {editing ? (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <input
               type="text"
               value={value}
