@@ -288,7 +288,7 @@ function AssignmentBlock({ block, style, activeClass, onUpdate, onDelete }) {
   return (
     <div className={`border-2 rounded-lg overflow-hidden ${style.container} ${activeClass} transition-all`}>
       <div className={`${style.header} px-3 py-1 flex items-center justify-between text-sm font-medium`}>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <GripVertical className="w-4 h-4 opacity-50" />
           <span>{style.label}</span>
         </div>
